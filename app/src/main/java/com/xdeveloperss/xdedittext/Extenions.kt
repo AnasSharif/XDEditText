@@ -1,5 +1,7 @@
 package com.xdeveloperss.xdedittext
 
+import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -7,6 +9,11 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.StateListDrawable
 import android.util.StateSet
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 
 
 enum class GradientTypes(val gradientType:Int) {
@@ -115,6 +122,30 @@ fun getSelectorDrawable(pressedColor:Int,bgColor:Int,radius:Int=0): StateListDra
     return drawable
 }
 
+fun ImageView.setDrawableX(rId: Int){
+    ContextCompat.getDrawable(this.context, rId)?.let {
+        setImageDrawable(it)
+    }
+}
+fun ImageView.setDrawableColorX(color: Int){
+    DrawableCompat.wrap(drawable).setTint(color)
+}
+fun View.isDarkMode(): Boolean{
+    val nightModeFlags = context.resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK
+    when (nightModeFlags) {
+        Configuration.UI_MODE_NIGHT_YES -> return true
+        Configuration.UI_MODE_NIGHT_NO -> return false
+        Configuration.UI_MODE_NIGHT_UNDEFINED ->return false
+    }
+    return false
+}
+infix fun <T> Boolean.then(param: T): T? = if (this) param else null
 
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+
+fun View.hideKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(windowToken, 0)
+}
